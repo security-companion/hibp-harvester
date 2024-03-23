@@ -8,6 +8,7 @@
 import configparser
 import os.path
 import sys
+import requests
 
 def read_config():
     config_file_name = 'hibp-harvester.cfg'
@@ -22,6 +23,31 @@ def read_config():
 
     return config
 
+def request_domains(config):
+    url = "https://haveibeenpwned.com/api/v3/subscribeddomains"
+
+    with requests.Session() as session:
+        headers = {
+            "hibp-api-key": config['DEFAULT']['API_KEY']
+        }
+        session.headers.update(headers)
+
+        with session.get(url) as response:
+            if not response.ok:
+                if response.status_code == 401:
+                    print("API key not valid")
+                    sys.exit(1)
+            subscribed_domains = response.json()
+        return subscribed_domains
+
+def request_breaches(subscribed_domains):
+    for current_domain in subscribed_domains:
+        print("harvesting domain: " + current_domain)
+
 if __name__ == "__main__":
     config = read_config()
-    print(config['DEFAULT']['API_KEY'])
+    #print(config['DEFAULT']['API_KEY'])
+
+    subscribed_domains = request_domains(config)
+
+    request_breaches(subscribed_domains)
