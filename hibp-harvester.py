@@ -9,6 +9,7 @@ import configparser
 import os.path
 import sys
 import requests
+import csv
 
 class Breach:
     def __init__(self, domain, alias, mail_address, breach_name):
@@ -16,6 +17,9 @@ class Breach:
         self.alias = alias
         self.mail_address = mail_address
         self.breach_name = breach_name
+    
+    def __iter__(self):
+        return [value for value in self.__dict__.values()]
 
 class BreachLibrary:
     def __init__(self):
@@ -26,6 +30,9 @@ class BreachLibrary:
     
     def add_breach(self, breach):
         self.breaches.append(breach)
+
+    def __iter__(self):
+        return iter(self.breaches)
 
 def read_config():
     config_file_name = 'hibp-harvester.cfg'
@@ -53,6 +60,9 @@ def request_domains(config):
             if not response.ok:
                 if response.status_code == 401:
                     print("API key not valid")
+                    sys.exit(1)
+                else:
+                    print(f"response code: {response.status_code}")
                     sys.exit(1)
             subscribed_domains = response.json()
         return subscribed_domains
@@ -93,8 +103,23 @@ def request_breaches_for_domain(domain):
                 if response.status_code == 401:
                     print("API key not valid")
                     sys.exit(1)
+                else:
+                    print(f"response code: {response.status_code}")
+                    sys.exit(1)
             domain_breaches = response.json()
-        return domain_breaches    
+        return domain_breaches
+
+def save_breaches_to_file(breachLibrary):
+    header_names = ["domain", "breached_alias", "breached_mail_address", "breach_name"]
+
+    with open("breaches.csv", "w",) as f:
+        write = csv.writer(f)
+
+        write.writerow(header_names)
+
+        for breach in breachLibrary:
+            #print (breach)
+            write.writerows(breach)
 
 if __name__ == "__main__":
     config = read_config()
@@ -105,6 +130,8 @@ if __name__ == "__main__":
     subscribed_domains = request_domains(config)
 
     request_breaches(subscribed_domains, breachLibrary)
+
+    save_breaches_to_file(breachLibrary)
 
     print("-"*20)
     print(f"found {breachLibrary.number_of_breaches()} breaches in total")
