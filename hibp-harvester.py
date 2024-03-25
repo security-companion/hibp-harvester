@@ -43,7 +43,7 @@ def read_config():
         config = configparser.ConfigParser()
         config.read('hibp-harvester.cfg')
     else:
-        print("Config file " + config_file_name + "does not exist, please create it by using the template file " + config_template_file_name)
+        print(f"Config file {config_file_name} does not exist, please create it by using the template file {config_template_file_name}")
         sys.exit(1)
 
     return config
@@ -78,7 +78,7 @@ def request_breaches(subscribed_domains, breachLibrary):
         if current_domain['PwnCount'] is None and current_domain['PwnCountExcludingSpamLists'] is None:
             print("domain has 0 pwns and 0 pwns exlcuding spam lists")
         else:
-            print("domain has " + str(current_domain['PwnCount']) + " pwns and " + str(current_domain['PwnCountExcludingSpamLists']) + " pwns exlcuding spam lists")
+            print(f"domain has {str(current_domain['PwnCount'])} pwns and {str(current_domain['PwnCountExcludingSpamLists'])} pwns exlcuding spam lists")
             domain_breaches = request_breaches_for_domain(domain_name)
             
             for alias in domain_breaches:
@@ -117,6 +117,8 @@ def request_breaches_for_domain(domain):
 
 def save_breaches_to_file(breachLibrary):
     header_names = ["domain", "breached_alias", "breached_mail_address", "breach_name"]
+
+    print("writing breaches to csv-file")
 
     with open("breaches.csv","w", newline='') as f:
         write = csv.writer(f)
