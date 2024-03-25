@@ -54,7 +54,8 @@ def request_domains(config):
     time.sleep(5)
     with requests.Session() as session:
         headers = {
-            "hibp-api-key": config['DEFAULT']['API_KEY']
+            "hibp-api-key": config['DEFAULT']['API_KEY'],
+            "user-agent": "hibp-harvester"
         }
         session.headers.update(headers)
 
@@ -99,7 +100,8 @@ def request_breaches_for_domain(domain):
     time.sleep(5)
     with requests.Session() as session:
         headers = {
-            "hibp-api-key": config['DEFAULT']['API_KEY']
+            "hibp-api-key": config['DEFAULT']['API_KEY'],
+            "user-agent": "hibp-harvester"
         }
         session.headers.update(headers)
 
