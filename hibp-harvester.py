@@ -47,9 +47,32 @@ def request_breaches(subscribed_domains):
         if current_domain['PwnCount'] is None and current_domain['PwnCountExcludingSpamLists'] is None:
             print("domain has 0 pwns and 0 pwns exlcuding spam lists")
         else:
-            print("domain has " + str(current_domain['PwnCount']) + " pwns and " + str(current_domain['PwnCountExcludingSpamLists']) + " pwns exlcuding spam lists")            
+            print("domain has " + str(current_domain['PwnCount']) + " pwns and " + str(current_domain['PwnCountExcludingSpamLists']) + " pwns exlcuding spam lists")
+            domain_breaches = request_breaches_for_domain(current_domain['DomainName'])
+            for alias in domain_breaches:
+                print("alias: " + alias)
+                breaches = domain_breaches[alias]
+                breached_mail_address = f"{alias}@{current_domain['DomainName']}"
+                print(breached_mail_address)
         print("next subscription renewal: " + current_domain['NextSubscriptionRenewal'])
         print("-"*20)
+
+def request_breaches_for_domain(domain):
+    url = f"https://haveibeenpwned.com/api/v3/breacheddomain/{domain}"
+
+    with requests.Session() as session:
+        headers = {
+            "hibp-api-key": config['DEFAULT']['API_KEY']
+        }
+        session.headers.update(headers)
+
+        with session.get(url) as response:
+            if not response.ok:
+                if response.status_code == 401:
+                    print("API key not valid")
+                    sys.exit(1)
+            domain_breaches = response.json()
+        return domain_breaches    
 
 if __name__ == "__main__":
     config = read_config()
