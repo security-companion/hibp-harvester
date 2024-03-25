@@ -13,7 +13,7 @@ A python tool to harvest have-i-been-pwned via domain search
 * filter for single breach names so that you can inform users about eg. latest breach
 
 Please do not run the harvester too often. 
-haveibeenpwned informs you automatically about new breaches via mail. If you get a mail about new breach then you can run the script once to get an updated csv-file which you can then filter
+haveibeenpwned informs you automatically about new breaches via mail for verified domains. If you get a mail about new breach then you can run the script once to get an updated csv-file which you can then filter
 
 ## Contributions
 Contributions are always welcome, please open a pull request or an issue
