@@ -53,10 +53,7 @@ def read_config():
     return config
 
 
-def request_domains(config):
-    url = "https://haveibeenpwned.com/api/v3/subscribeddomains"
-    print("wait")
-    time.sleep(5)
+def make_request(url):
     with requests.Session() as session:
         headers = {
             "hibp-api-key": config['DEFAULT']['API_KEY'],
@@ -73,8 +70,17 @@ def request_domains(config):
                     print(f"response code: {response.status_code}")
                     print(f"response message: {response.message}")
                     sys.exit(1)
-            subscribed_domains = response.json()
-        return subscribed_domains
+            response_json = response.json()
+        return response_json
+
+
+def request_domains(config):
+    url = "https://haveibeenpwned.com/api/v3/subscribeddomains"
+    print("wait")
+    time.sleep(5)
+
+    subscribed_domains = make_request(url)
+    return subscribed_domains
 
 
 def request_breaches(subscribed_domains, breachLibrary):
@@ -106,24 +112,9 @@ def request_breaches_for_domain(domain):
     url = f"https://haveibeenpwned.com/api/v3/breacheddomain/{domain}"
     print("wait")
     time.sleep(5)
-    with requests.Session() as session:
-        headers = {
-            "hibp-api-key": config['DEFAULT']['API_KEY'],
-            "user-agent": "hibp-harvester"
-        }
-        session.headers.update(headers)
 
-        with session.get(url) as response:
-            if not response.ok:
-                if response.status_code == 401:
-                    print("API key not valid")
-                    sys.exit(1)
-                else:
-                    print(f"response code: {response.status_code}")
-                    print(f"response message: {response.message}")
-                    sys.exit(1)
-            domain_breaches = response.json()
-        return domain_breaches
+    domain_breaches = make_request(url)
+    return domain_breaches
 
 
 def save_breaches_to_file(breachLibrary):
