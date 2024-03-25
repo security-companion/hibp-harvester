@@ -8,6 +8,7 @@
 import configparser
 import os.path
 import sys
+import time
 import requests
 import csv
 
@@ -19,7 +20,7 @@ class Breach:
         self.breach_name = breach_name
     
     def __iter__(self):
-        return [value for value in self.__dict__.values()]
+        return self
 
 class BreachLibrary:
     def __init__(self):
@@ -49,7 +50,8 @@ def read_config():
 
 def request_domains(config):
     url = "https://haveibeenpwned.com/api/v3/subscribeddomains"
-
+    print("wait")
+    time.sleep(5)
     with requests.Session() as session:
         headers = {
             "hibp-api-key": config['DEFAULT']['API_KEY']
@@ -63,6 +65,7 @@ def request_domains(config):
                     sys.exit(1)
                 else:
                     print(f"response code: {response.status_code}")
+                    print(f"response reason: {response.reason}")
                     sys.exit(1)
             subscribed_domains = response.json()
         return subscribed_domains
@@ -77,6 +80,7 @@ def request_breaches(subscribed_domains, breachLibrary):
         else:
             print("domain has " + str(current_domain['PwnCount']) + " pwns and " + str(current_domain['PwnCountExcludingSpamLists']) + " pwns exlcuding spam lists")
             domain_breaches = request_breaches_for_domain(domain_name)
+            
             for alias in domain_breaches:
                 print("  breached alias: " + alias)
                 breaches = domain_breaches[alias]
@@ -91,7 +95,8 @@ def request_breaches(subscribed_domains, breachLibrary):
 
 def request_breaches_for_domain(domain):
     url = f"https://haveibeenpwned.com/api/v3/breacheddomain/{domain}"
-
+    print("wait")
+    time.sleep(5)
     with requests.Session() as session:
         headers = {
             "hibp-api-key": config['DEFAULT']['API_KEY']
@@ -105,6 +110,7 @@ def request_breaches_for_domain(domain):
                     sys.exit(1)
                 else:
                     print(f"response code: {response.status_code}")
+                    print(f"response reason: {response.reason}")
                     sys.exit(1)
             domain_breaches = response.json()
         return domain_breaches
@@ -112,14 +118,14 @@ def request_breaches_for_domain(domain):
 def save_breaches_to_file(breachLibrary):
     header_names = ["domain", "breached_alias", "breached_mail_address", "breach_name"]
 
-    with open("breaches.csv", "w",) as f:
+    with open("breaches.csv","w", newline='') as f:
         write = csv.writer(f)
 
         write.writerow(header_names)
-
+        #write.writerows(breachLibrary)
         for breach in breachLibrary:
-            #print (breach)
-            write.writerows(breach)
+            #print (f"{breach.domain},{breach.alias},{breach.mail_address},{breach.breach_name}")
+            write.writerow([breach.domain,breach.alias,breach.mail_address,breach.breach_name])
 
 if __name__ == "__main__":
     config = read_config()
