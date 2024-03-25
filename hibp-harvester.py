@@ -10,6 +10,23 @@ import os.path
 import sys
 import requests
 
+class Breach:
+    def __init__(self, domain, alias, mail_address, breach_name):
+        self.domain = domain
+        self.alias = alias
+        self.mail_address = mail_address
+        self.breach_name = breach_name
+
+class BreachLibrary:
+    def __init__(self):
+        self.breaches = []
+
+    def number_of_breaches(self):
+        return len(self.breaches)
+    
+    def add_breach(self, breach):
+        self.breaches.append(breach)
+
 def read_config():
     config_file_name = 'hibp-harvester.cfg'
     config_template_file_name = 'hibp-harvester_template.cfg'
@@ -40,21 +57,26 @@ def request_domains(config):
             subscribed_domains = response.json()
         return subscribed_domains
 
-def request_breaches(subscribed_domains):
+def request_breaches(subscribed_domains, breachLibrary):
     for current_domain in subscribed_domains:
         #current_domain['PwnCountExcludingSpamListsAtLastSubscriptionRenewal']
-        print("harvesting domain: " + current_domain['DomainName'])
+        domain_name = current_domain['DomainName']
+        print("harvesting domain: " + domain_name)
         if current_domain['PwnCount'] is None and current_domain['PwnCountExcludingSpamLists'] is None:
             print("domain has 0 pwns and 0 pwns exlcuding spam lists")
         else:
             print("domain has " + str(current_domain['PwnCount']) + " pwns and " + str(current_domain['PwnCountExcludingSpamLists']) + " pwns exlcuding spam lists")
-            domain_breaches = request_breaches_for_domain(current_domain['DomainName'])
+            domain_breaches = request_breaches_for_domain(domain_name)
             for alias in domain_breaches:
-                print("alias: " + alias)
+                print("  breached alias: " + alias)
                 breaches = domain_breaches[alias]
-                breached_mail_address = f"{alias}@{current_domain['DomainName']}"
-                print(breached_mail_address)
-        print("next subscription renewal: " + current_domain['NextSubscriptionRenewal'])
+                breached_mail_address = f"{alias}@{domain_name}"
+                #print(breached_mail_address)
+                for current_breach in breaches:
+                    #print(current_breach)
+                    breach = Breach(domain_name, alias, breached_mail_address, current_breach)
+                    breachLibrary.add_breach(breach)
+        print(f"next subscription renewal: {current_domain['NextSubscriptionRenewal']}")
         print("-"*20)
 
 def request_breaches_for_domain(domain):
@@ -78,6 +100,12 @@ if __name__ == "__main__":
     config = read_config()
     #print(config['DEFAULT']['API_KEY'])
 
+    breachLibrary = BreachLibrary()
+
     subscribed_domains = request_domains(config)
 
-    request_breaches(subscribed_domains)
+    request_breaches(subscribed_domains, breachLibrary)
+
+    print("-"*20)
+    print(f"found {breachLibrary.number_of_breaches()} breaches in total")
+    print("-"*20)
