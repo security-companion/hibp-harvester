@@ -12,15 +12,17 @@ import time
 import requests
 import csv
 
+
 class Breach:
     def __init__(self, domain, alias, mail_address, breach_name):
         self.domain = domain
         self.alias = alias
         self.mail_address = mail_address
         self.breach_name = breach_name
-    
+
     def __iter__(self):
         return self
+
 
 class BreachLibrary:
     def __init__(self):
@@ -28,12 +30,13 @@ class BreachLibrary:
 
     def number_of_breaches(self):
         return len(self.breaches)
-    
+
     def add_breach(self, breach):
         self.breaches.append(breach)
 
     def __iter__(self):
         return iter(self.breaches)
+
 
 def read_config():
     config_file_name = 'hibp-harvester.cfg'
@@ -43,10 +46,12 @@ def read_config():
         config = configparser.ConfigParser()
         config.read('hibp-harvester.cfg')
     else:
-        print(f"Config file {config_file_name} does not exist, please create it by using the template file {config_template_file_name}")
+        print(f"Config file {config_file_name} does not exist, please create it by using \
+              the template file {config_template_file_name}")
         sys.exit(1)
 
     return config
+
 
 def request_domains(config):
     url = "https://haveibeenpwned.com/api/v3/subscribeddomains"
@@ -71,28 +76,31 @@ def request_domains(config):
             subscribed_domains = response.json()
         return subscribed_domains
 
+
 def request_breaches(subscribed_domains, breachLibrary):
     for current_domain in subscribed_domains:
-        #current_domain['PwnCountExcludingSpamListsAtLastSubscriptionRenewal']
+        # current_domain['PwnCountExcludingSpamListsAtLastSubscriptionRenewal']
         domain_name = current_domain['DomainName']
         print("harvesting domain: " + domain_name)
         if current_domain['PwnCount'] is None and current_domain['PwnCountExcludingSpamLists'] is None:
             print("domain has 0 pwns and 0 pwns exlcuding spam lists")
         else:
-            print(f"domain has {str(current_domain['PwnCount'])} pwns and {str(current_domain['PwnCountExcludingSpamLists'])} pwns exlcuding spam lists")
+            print(f"domain has {str(current_domain['PwnCount'])} pwns and {str(current_domain['PwnCountExcludingSpamLists'])} \
+                  pwns exlcuding spam lists")
             domain_breaches = request_breaches_for_domain(domain_name)
-            
+
             for alias in domain_breaches:
                 print("  breached alias: " + alias)
                 breaches = domain_breaches[alias]
                 breached_mail_address = f"{alias}@{domain_name}"
-                #print(breached_mail_address)
+                # print(breached_mail_address)
                 for current_breach in breaches:
-                    #print(current_breach)
+                    # print(current_breach)
                     breach = Breach(domain_name, alias, breached_mail_address, current_breach)
                     breachLibrary.add_breach(breach)
         print(f"next subscription renewal: {current_domain['NextSubscriptionRenewal']}")
         print("-"*20)
+
 
 def request_breaches_for_domain(domain):
     url = f"https://haveibeenpwned.com/api/v3/breacheddomain/{domain}"
@@ -117,23 +125,25 @@ def request_breaches_for_domain(domain):
             domain_breaches = response.json()
         return domain_breaches
 
+
 def save_breaches_to_file(breachLibrary):
     header_names = ["domain", "breached_alias", "breached_mail_address", "breach_name"]
 
     print("writing breaches to csv-file")
 
-    with open("breaches.csv","w", newline='') as f:
+    with open("breaches.csv", "w", newline='') as f:
         write = csv.writer(f)
 
         write.writerow(header_names)
-        #write.writerows(breachLibrary)
+        # write.writerows(breachLibrary)
         for breach in breachLibrary:
-            #print (f"{breach.domain},{breach.alias},{breach.mail_address},{breach.breach_name}")
-            write.writerow([breach.domain,breach.alias,breach.mail_address,breach.breach_name])
+            # print (f"{breach.domain},{breach.alias},{breach.mail_address},{breach.breach_name}")
+            write.writerow([breach.domain, breach.alias, breach.mail_address, breach.breach_name])
+
 
 if __name__ == "__main__":
     config = read_config()
-    #print(config['DEFAULT']['API_KEY'])
+    # print(config['DEFAULT']['API_KEY'])
 
     breachLibrary = BreachLibrary()
 
