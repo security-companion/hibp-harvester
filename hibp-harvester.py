@@ -71,7 +71,7 @@ def request_domains(config):
                     sys.exit(1)
                 else:
                     print(f"response code: {response.status_code}")
-                    print(f"response reason: {response.reason}")
+                    print(f"response message: {response.message}")
                     sys.exit(1)
             subscribed_domains = response.json()
         return subscribed_domains
@@ -120,7 +120,7 @@ def request_breaches_for_domain(domain):
                     sys.exit(1)
                 else:
                     print(f"response code: {response.status_code}")
-                    print(f"response reason: {response.reason}")
+                    print(f"response message: {response.message}")
                     sys.exit(1)
             domain_breaches = response.json()
         return domain_breaches
