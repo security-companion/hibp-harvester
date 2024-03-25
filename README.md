@@ -1,4 +1,4 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)![Gitub Actions](https://github.com/security-companion/hibp-harvester/actions/workflows/python-app.yml/badge.svg)![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)![Gitub Actions](https://github.com/security-companion/hibp-harvester/actions/workflows/python-app.yml/badge.svg)![Python](https://img.shields.io/badge/programming_language-python?logo=python)
 # hibp-harvester
 A python tool to harvest have-i-been-pwned via domain search
 
