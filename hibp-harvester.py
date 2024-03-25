@@ -12,6 +12,7 @@ import sys
 import requests
 import csv
 
+
 class Breach:
     def __init__(self, domain, alias, mail_address, breach_name):
         self.domain = domain
