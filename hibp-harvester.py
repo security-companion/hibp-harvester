@@ -42,7 +42,14 @@ def request_domains(config):
 
 def request_breaches(subscribed_domains):
     for current_domain in subscribed_domains:
-        print("harvesting domain: " + current_domain)
+        #current_domain['PwnCountExcludingSpamListsAtLastSubscriptionRenewal']
+        print("harvesting domain: " + current_domain['DomainName'])
+        if current_domain['PwnCount'] is None and current_domain['PwnCountExcludingSpamLists'] is None:
+            print("domain has 0 pwns and 0 pwns exlcuding spam lists")
+        else:
+            print("domain has " + str(current_domain['PwnCount']) + " pwns and " + str(current_domain['PwnCountExcludingSpamLists']) + " pwns exlcuding spam lists")            
+        print("next subscription renewal: " + current_domain['NextSubscriptionRenewal'])
+        print("-"*20)
 
 if __name__ == "__main__":
     config = read_config()
