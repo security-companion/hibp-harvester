@@ -8,7 +8,7 @@
 import configparser
 import os.path
 import sys
-import time
+# import time
 import requests
 import csv
 
@@ -76,8 +76,8 @@ def make_request(url):
 
 def request_domains(config):
     url = "https://haveibeenpwned.com/api/v3/subscribeddomains"
-    print("wait")
-    time.sleep(5)
+    # print("wait")
+    # time.sleep(5)
 
     subscribed_domains = make_request(url)
     return subscribed_domains
@@ -91,8 +91,8 @@ def request_breaches(subscribed_domains, breachLibrary):
         if current_domain['PwnCount'] is None and current_domain['PwnCountExcludingSpamLists'] is None:
             print("domain has 0 pwns and 0 pwns exlcuding spam lists")
         else:
-            print(f"domain has {str(current_domain['PwnCount'])} pwns and {str(current_domain['PwnCountExcludingSpamLists'])} \
-                  pwns exlcuding spam lists")
+            pwn_count_excluded = str(current_domain['PwnCountExcludingSpamLists'])
+            print(f"domain has {str(current_domain['PwnCount'])} pwns and {pwn_count_excluded} pwns exlcuding spam lists")
             domain_breaches = request_breaches_for_domain(domain_name)
 
             for alias in domain_breaches:
@@ -110,8 +110,8 @@ def request_breaches(subscribed_domains, breachLibrary):
 
 def request_breaches_for_domain(domain):
     url = f"https://haveibeenpwned.com/api/v3/breacheddomain/{domain}"
-    print("wait")
-    time.sleep(5)
+    # print("wait")
+    # time.sleep(5)
 
     domain_breaches = make_request(url)
     return domain_breaches
