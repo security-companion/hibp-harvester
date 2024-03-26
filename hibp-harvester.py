@@ -8,7 +8,7 @@
 import configparser
 import os.path
 import sys
-# import time
+import time
 import requests
 import csv
 
@@ -64,6 +64,10 @@ def make_request(url):
         }
         session.headers.update(headers)
 
+        wait_time_seconds = config['DEFAULT']['WAIT_TIME_SECONDS']
+        print(f"wait {wait_time_seconds} seconds before next request")
+        time.sleep(int(wait_time_seconds))
+
         with session.get(url) as response:
             if not response.ok:
                 if response.status_code == 401:
@@ -84,10 +88,9 @@ def request_all_breaches():
     return all_breaches
 
 
-def request_domains(config):
+def request_domains():
     url = "https://haveibeenpwned.com/api/v3/subscribeddomains"
-    # print("wait")
-    # time.sleep(5)
+
 
     subscribed_domains = make_request(url)
     return subscribed_domains
@@ -137,8 +140,6 @@ def request_breaches_for_subscribed_domains(subscribed_domains, breachLibrary, a
 
 def request_breaches_for_domain(domain):
     url = f"https://haveibeenpwned.com/api/v3/breacheddomain/{domain}"
-    # print("wait")
-    # time.sleep(5)
 
     domain_breaches = make_request(url)
     return domain_breaches
@@ -169,7 +170,7 @@ if __name__ == "__main__":
 
     all_breaches = request_all_breaches()
 
-    subscribed_domains = request_domains(config)
+    subscribed_domains = request_domains()
 
     request_breaches_for_subscribed_domains(subscribed_domains, breachLibrary, all_breaches)
 
