@@ -91,7 +91,6 @@ def request_all_breaches():
 def request_domains():
     url = "https://haveibeenpwned.com/api/v3/subscribeddomains"
 
-
     subscribed_domains = make_request(url)
     return subscribed_domains
 
