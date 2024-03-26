@@ -177,5 +177,5 @@ if __name__ == "__main__":
     save_breaches_to_file(breachLibrary)
 
     print("-"*20)
-    print(f"found {breachLibrary.number_of_breaches()} breaches in total")
+    print(f"found {breachLibrary.number_of_breaches()} breaches in {len(subscribed_domains)} domains")
     print("-"*20)
