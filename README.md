@@ -10,7 +10,7 @@ A python tool to harvest have-i-been-pwned via domain search
 * run python install -r requirements.txt
 * run python hibp-harvester.py
 * open created csv-file eg. in Excel
-* filter for single breach names so that you can inform users about eg. latest breach
+* filter for single breach names so that you can inform users about eg. latest breach or filter for dates
 
 Please do not run the harvester too often. 
 haveibeenpwned informs you automatically about new breaches via mail for verified domains. If you get a mail about new breach then you can run the script once to get an updated csv-file which you can then filter

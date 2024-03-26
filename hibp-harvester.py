@@ -14,11 +14,14 @@ import csv
 
 
 class Breach:
-    def __init__(self, domain, alias, mail_address, breach_name):
+    def __init__(self, domain, alias, mail_address, breach_name, breach_date, added_date, modified_date):
         self.domain = domain
         self.alias = alias
         self.mail_address = mail_address
         self.breach_name = breach_name
+        self.breach_date = breach_date
+        self.added_date = added_date
+        self.modified_date = modified_date
 
     def __iter__(self):
         return self
@@ -74,6 +77,13 @@ def make_request(url):
         return response_json
 
 
+def request_all_breaches():
+    url = "https://haveibeenpwned.com/api/v3/breaches"
+
+    all_breaches = make_request(url)
+    return all_breaches
+
+
 def request_domains(config):
     url = "https://haveibeenpwned.com/api/v3/subscribeddomains"
     # print("wait")
@@ -83,7 +93,22 @@ def request_domains(config):
     return subscribed_domains
 
 
-def request_breaches(subscribed_domains, breachLibrary):
+def get_breach_details(current_breach, all_breaches):
+    breach_date = "unknown"
+    added_date = "unknown"
+    modified_date = "unknown"
+
+    for breach in all_breaches:
+        if breach["Name"] == current_breach:
+            breach_date = breach["BreachDate"]
+            added_date = breach["AddedDate"]
+            modified_date = breach["ModifiedDate"]
+            break
+
+    return {"breach_date": breach_date, "added_date": added_date, "modified_date": modified_date}
+
+
+def request_breaches_for_subscribed_domains(subscribed_domains, breachLibrary, all_breaches):
     for current_domain in subscribed_domains:
         # current_domain['PwnCountExcludingSpamListsAtLastSubscriptionRenewal']
         domain_name = current_domain['DomainName']
@@ -102,7 +127,9 @@ def request_breaches(subscribed_domains, breachLibrary):
                 # print(breached_mail_address)
                 for current_breach in breaches:
                     # print(current_breach)
-                    breach = Breach(domain_name, alias, breached_mail_address, current_breach)
+                    breach_details = get_breach_details(current_breach, all_breaches)
+                    breach = Breach(domain_name, alias, breached_mail_address, current_breach, breach_details["breach_date"],
+                                    breach_details["added_date"], breach_details["modified_date"])
                     breachLibrary.add_breach(breach)
         print(f"next subscription renewal: {current_domain['NextSubscriptionRenewal']}")
         print("-"*20)
@@ -118,7 +145,8 @@ def request_breaches_for_domain(domain):
 
 
 def save_breaches_to_file(breachLibrary):
-    header_names = ["domain", "breached_alias", "breached_mail_address", "breach_name"]
+    header_names = ["domain", "breached_alias", "breached_mail_address", "breach_name",
+                    "breach_date", "added_date", "modified_date"]
 
     print("writing breaches to csv-file")
 
@@ -129,7 +157,8 @@ def save_breaches_to_file(breachLibrary):
         # write.writerows(breachLibrary)
         for breach in breachLibrary:
             # print (f"{breach.domain},{breach.alias},{breach.mail_address},{breach.breach_name}")
-            write.writerow([breach.domain, breach.alias, breach.mail_address, breach.breach_name])
+            write.writerow([breach.domain, breach.alias, breach.mail_address, breach.breach_name,
+                            breach.breach_date, breach.added_date, breach.modified_date])
 
 
 if __name__ == "__main__":
@@ -138,9 +167,11 @@ if __name__ == "__main__":
 
     breachLibrary = BreachLibrary()
 
+    all_breaches = request_all_breaches()
+
     subscribed_domains = request_domains(config)
 
-    request_breaches(subscribed_domains, breachLibrary)
+    request_breaches_for_subscribed_domains(subscribed_domains, breachLibrary, all_breaches)
 
     save_breaches_to_file(breachLibrary)
 
