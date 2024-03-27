@@ -7,6 +7,7 @@ setup(
     url="https://github.com/security-companion/hibp-harvester",
     description="A python tool to harvest haveibeenpwned.com via domain search",
     long_description=open('README.md', 'r').read(),
+    long_description_content_type = "text/markdown",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
