@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="hibp-harvester",
-    version="1.0.3",
+    version="1.0.4",
     author="Joachim Mammele",
     url="https://github.com/security-companion/hibp-harvester",
     description="A python tool to harvest haveibeenpwned.com via domain search",
