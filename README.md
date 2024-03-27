@@ -15,6 +15,10 @@ A python tool to harvest have-i-been-pwned via domain search
 Please do not run the harvester too often. 
 haveibeenpwned informs you automatically about new breaches via mail for verified domains. If you get a mail about new breach then you can run the script once to get an updated csv-file which you can then filter
 
+## Todo
+
+Add automated tests, will be done once a test API key is avaiable, see [uservoice](https://haveibeenpwned.uservoice.com/forums/275398-general/suggestions/48189713-implement-test-api-key-for-automated-domain-search)
+
 ## Contributions
 Contributions are always welcome, please open a pull request or an issue
 
