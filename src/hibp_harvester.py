@@ -13,15 +13,6 @@ import requests
 import csv
 import click
 
-@click.command()
-@click.option(
-    "--api_key",
-    help="This specifies the api-key from haveibeenpwned",
-)
-@click.option(
-    "--wait_time",
-    help="The wait time in seconds between requests to the API",
-)
 
 class Breach:
     def __init__(self, domain, alias, mail_address, breach_name, breach_date, added_date, modified_date):
@@ -173,6 +164,15 @@ def save_breaches_to_file(breachLibrary):
                             breach.breach_date, breach.added_date, breach.modified_date])
 
 
+@click.command()
+@click.option(
+    "--api_key",
+    help="This specifies the api-key from haveibeenpwned",
+)
+@click.option(
+    "--wait_time",
+    help="The wait time in seconds between requests to the API",
+)
 def main(api_key, wait_time):
     config = read_config(api_key, wait_time)
     # print(config['DEFAULT']['API_KEY'])
