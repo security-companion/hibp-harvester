@@ -170,7 +170,8 @@ def save_breaches_to_file(breachLibrary):
 )
 @click.option(
     "--wait_time",
-    help="The wait time in seconds between requests to the API",
+    default=3,
+    help="The wait time in seconds between requests to the API, default is 2 seconds",
 )
 def main(api_key, wait_time):
     config = read_config(api_key, wait_time)
