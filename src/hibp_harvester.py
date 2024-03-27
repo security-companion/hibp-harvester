@@ -45,9 +45,8 @@ class BreachLibrary:
 def read_config(api_key, wait_time):
     config_file_name = 'hibp-harvester.cfg'
     config_template_file_name = 'hibp-harvester_template.cfg'
+    config = configparser.ConfigParser()
     if os.path.exists(config_file_name):
-
-        config = configparser.ConfigParser()
         config.read('hibp-harvester.cfg')
     else:
         print(f"Config file {config_file_name} does not exist, please create it by using \
