@@ -56,7 +56,7 @@ def read_config():
     return config
 
 
-def make_request(url):
+def make_request(config, url):
     with requests.Session() as session:
         headers = {
             "hibp-api-key": config['DEFAULT']['API_KEY'],
@@ -81,17 +81,17 @@ def make_request(url):
         return response_json
 
 
-def request_all_breaches():
+def request_all_breaches(config):
     url = "https://haveibeenpwned.com/api/v3/breaches"
 
-    all_breaches = make_request(url)
+    all_breaches = make_request(config, url)
     return all_breaches
 
 
-def request_domains():
+def request_domains(config):
     url = "https://haveibeenpwned.com/api/v3/subscribeddomains"
 
-    subscribed_domains = make_request(url)
+    subscribed_domains = make_request(config, url)
     return subscribed_domains
 
 
@@ -110,7 +110,7 @@ def get_breach_details(current_breach, all_breaches):
     return {"breach_date": breach_date, "added_date": added_date, "modified_date": modified_date}
 
 
-def request_breaches_for_subscribed_domains(subscribed_domains, breachLibrary, all_breaches):
+def request_breaches_for_subscribed_domains(config, subscribed_domains, breachLibrary, all_breaches):
     for current_domain in subscribed_domains:
         # current_domain['PwnCountExcludingSpamListsAtLastSubscriptionRenewal']
         domain_name = current_domain['DomainName']
@@ -120,7 +120,7 @@ def request_breaches_for_subscribed_domains(subscribed_domains, breachLibrary, a
         else:
             pwn_count_excluded = str(current_domain['PwnCountExcludingSpamLists'])
             print(f"domain has {str(current_domain['PwnCount'])} pwns and {pwn_count_excluded} pwns exlcuding spam lists")
-            domain_breaches = request_breaches_for_domain(domain_name)
+            domain_breaches = request_breaches_for_domain(config, domain_name)
 
             for alias in domain_breaches:
                 print("  breached alias: " + alias)
@@ -137,10 +137,10 @@ def request_breaches_for_subscribed_domains(subscribed_domains, breachLibrary, a
         print("-"*20)
 
 
-def request_breaches_for_domain(domain):
+def request_breaches_for_domain(config, domain):
     url = f"https://haveibeenpwned.com/api/v3/breacheddomain/{domain}"
 
-    domain_breaches = make_request(url)
+    domain_breaches = make_request(config, url)
     return domain_breaches
 
 
@@ -161,20 +161,24 @@ def save_breaches_to_file(breachLibrary):
                             breach.breach_date, breach.added_date, breach.modified_date])
 
 
-if __name__ == "__main__":
+def main():
     config = read_config()
     # print(config['DEFAULT']['API_KEY'])
 
     breachLibrary = BreachLibrary()
 
-    all_breaches = request_all_breaches()
+    all_breaches = request_all_breaches(config)
 
-    subscribed_domains = request_domains()
+    subscribed_domains = request_domains(config)
 
-    request_breaches_for_subscribed_domains(subscribed_domains, breachLibrary, all_breaches)
+    request_breaches_for_subscribed_domains(config, subscribed_domains, breachLibrary, all_breaches)
 
     save_breaches_to_file(breachLibrary)
 
     print("-"*20)
     print(f"found {breachLibrary.number_of_breaches()} breaches in {len(subscribed_domains)} domains")
     print("-"*20)
+
+
+if __name__ == "__main__":
+    main()
