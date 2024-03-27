@@ -13,5 +13,5 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=["click", "requests"],
-    entry_points={"console_scripts": ["hibp-harvester = src.hibp-harvester:main"]},
+    entry_points={"console_scripts": ["hibp-harvester = src.hibp_harvester:main"]},
 )
