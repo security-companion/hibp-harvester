@@ -6,6 +6,7 @@ setup(
     author="Joachim Mammele",
     url="https://github.com/security-companion/hibp-harvester",
     description="A python tool to harvest haveibeenpwned.com via domain search",
+    long_description=open('README.md', 'r').read(),
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
