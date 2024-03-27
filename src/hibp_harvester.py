@@ -52,8 +52,8 @@ def read_config(api_key, wait_time):
         print(f"Config file {config_file_name} does not exist, please create it by using \
               the template file {config_template_file_name}, using values from parameters")
         # sys.exit(1)
-        config['DEFAULT']['API_KEY'] = api_key
-        config['DEFAULT']['WAIT_TIME_SECONDS'] = wait_time
+        config["DEFAULT"]["API_KEY"] = api_key
+        config["DEFAULT"]["WAIT_TIME_SECONDS"] = wait_time
 
     return config
 
@@ -170,8 +170,7 @@ def save_breaches_to_file(breachLibrary):
 )
 @click.option(
     "--wait_time",
-    default=3,
-    help="The wait time in seconds between requests to the API, default is 2 seconds",
+    help="The wait time in seconds between requests to the API, default is 3 seconds",
 )
 def main(api_key, wait_time):
     config = read_config(api_key, wait_time)
