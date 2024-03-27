@@ -11,7 +11,17 @@ import sys
 import time
 import requests
 import csv
+import click
 
+@click.command()
+@click.option(
+    "--api_key",
+    help="This specifies the api-key from haveibeenpwned",
+)
+@click.option(
+    "--wait_time",
+    help="The wait time in seconds between requests to the API",
+)
 
 class Breach:
     def __init__(self, domain, alias, mail_address, breach_name, breach_date, added_date, modified_date):
@@ -41,7 +51,7 @@ class BreachLibrary:
         return iter(self.breaches)
 
 
-def read_config():
+def read_config(api_key, wait_time):
     config_file_name = 'hibp-harvester.cfg'
     config_template_file_name = 'hibp-harvester_template.cfg'
     if os.path.exists(config_file_name):
@@ -50,8 +60,10 @@ def read_config():
         config.read('hibp-harvester.cfg')
     else:
         print(f"Config file {config_file_name} does not exist, please create it by using \
-              the template file {config_template_file_name}")
-        sys.exit(1)
+              the template file {config_template_file_name}, using values from parameters")
+        # sys.exit(1)
+        config['DEFAULT']['API_KEY'] = api_key
+        config['DEFAULT']['WAIT_TIME_SECONDS'] = wait_time
 
     return config
 
@@ -161,8 +173,8 @@ def save_breaches_to_file(breachLibrary):
                             breach.breach_date, breach.added_date, breach.modified_date])
 
 
-def main():
-    config = read_config()
+def main(api_key, wait_time):
+    config = read_config(api_key, wait_time)
     # print(config['DEFAULT']['API_KEY'])
 
     breachLibrary = BreachLibrary()
