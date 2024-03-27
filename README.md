@@ -7,7 +7,7 @@ A python tool to harvest haveibeenpwned.com via domain search
 * add your domains to the domain search dashboard on haveibeenpwend.com
 * purchase a subscription to get an API key
 * run pip install hibp-harvester
-* run python src/hibp-harvester.py --api_key xxxx  --wait_time 3
+* run hibp-harvester --api_key xxxx  --wait_time 3
 * open created csv-file eg. in Excel
 * filter for single breach names so that you can inform users about eg. latest breach or filter for dates
 
