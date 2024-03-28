@@ -49,11 +49,14 @@ def read_config(api_key, wait_time):
     if os.path.exists(config_file_name):
         config.read('hibp-harvester.cfg')
     else:
-        print(f"Config file {config_file_name} does not exist, please create it by using \
-              the template file {config_template_file_name}, using values from parameters")
+        # print(f"Config file {config_file_name} does not exist, please create it by using \
+        #       the template file {config_template_file_name}, using values from parameters")
         # sys.exit(1)
+        if wait_time == None:
+            print("setting wait_time to default of 3 as not defined via parameter")
+            wait_time = "3"
         config["DEFAULT"]["API_KEY"] = api_key
-        config["DEFAULT"]["WAIT_TIME_SECONDS"] = wait_time
+        config["DEFAULT"]["WAIT_TIME_SECONDS"] = str(wait_time)
 
     return config
 
@@ -166,10 +169,12 @@ def save_breaches_to_file(breachLibrary):
 @click.command()
 @click.option(
     "--api_key",
+    required=True,
     help="This specifies the api-key from haveibeenpwned",
 )
 @click.option(
     "--wait_time",
+    type=int,
     help="The wait time in seconds between requests to the API, default is 3 seconds",
 )
 def main(api_key, wait_time):
