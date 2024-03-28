@@ -5,8 +5,6 @@
 
 # Licensed under MIT (see LICENSE-file)
 
-import configparser
-import os.path
 import sys
 import time
 import requests
@@ -43,33 +41,22 @@ class BreachLibrary:
 
 
 def read_config(api_key, wait_time):
-    config_file_name = 'hibp-harvester.cfg'
-    config_template_file_name = 'hibp-harvester_template.cfg'
-    config = configparser.ConfigParser()
-    if os.path.exists(config_file_name):
-        config.read('hibp-harvester.cfg')
-    else:
-        # print(f"Config file {config_file_name} does not exist, please create it by using \
-        #       the template file {config_template_file_name}, using values from parameters")
-        # sys.exit(1)
-        if wait_time == None:
-            print("setting wait_time to default of 3 as not defined via parameter")
-            wait_time = "3"
-        config["DEFAULT"]["API_KEY"] = api_key
-        config["DEFAULT"]["WAIT_TIME_SECONDS"] = str(wait_time)
+    if wait_time is None:
+        print("setting wait_time to default of 3 as not defined via parameter")
+        wait_time = "3"
 
-    return config
+    return {"api_key": api_key, "wait_time": wait_time}
 
 
 def make_request(config, url):
     with requests.Session() as session:
         headers = {
-            "hibp-api-key": config['DEFAULT']['API_KEY'],
+            "hibp-api-key": config["api_key"],
             "user-agent": "hibp-harvester"
         }
         session.headers.update(headers)
 
-        wait_time_seconds = config['DEFAULT']['WAIT_TIME_SECONDS']
+        wait_time_seconds = config["wait_time"]
         print(f"wait {wait_time_seconds} seconds before next request")
         time.sleep(int(wait_time_seconds))
 
@@ -179,7 +166,6 @@ def save_breaches_to_file(breachLibrary):
 )
 def main(api_key, wait_time):
     config = read_config(api_key, wait_time)
-    # print(config['DEFAULT']['API_KEY'])
 
     breachLibrary = BreachLibrary()
 
