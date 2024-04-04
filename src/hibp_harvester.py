@@ -65,6 +65,10 @@ def make_request(config, url):
                 if response.status_code == 401:
                     print("API key not valid")
                     sys.exit(1)
+                elif response.status_code == 404:
+                    print("the account could not be found and has therefore not been pwned")
+                    print(url)
+                    return {}
                 else:
                     print(f"response code: {response.status_code}")
                     print(f"response message: {response.message}")
